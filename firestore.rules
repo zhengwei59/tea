@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidOrder(data) {
+      return data.userName is string && data.userName.size() <= 100 &&
+             data.drinkName is string && data.drinkName.size() <= 100 &&
+             data.sugar is string && data.sugar.size() <= 20 &&
+             data.ice is string && data.ice.size() <= 20 &&
+             data.note is string && data.note.size() <= 500 &&
+             data.price is number && data.price >= 0 &&
+             data.createdAt is timestamp;
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    match /orders/{orderId} {
+      allow read: if true; // Publicly viewable for group members
+      allow create: if isValidOrder(request.resource.data) &&
+                      request.resource.data.createdAt == request.time;
+      allow delete: if isSignedIn(); // Only signed-in users can delete (e.g., the manager)
+      allow update: if false; // Orders are immutable in this simple version
+    }
+  }
+}
