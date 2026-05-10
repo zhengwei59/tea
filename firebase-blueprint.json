@@ -1,0 +1,25 @@
+{
+  "entities": {
+    "Order": {
+      "title": "Drink Order",
+      "description": "A single drink order in a group buy",
+      "type": "object",
+      "properties": {
+        "userName": { "type": "string", "description": "Name of the person ordering" },
+        "drinkName": { "type": "string", "description": "Name of the drink" },
+        "sugar": { "type": "string", "description": "Sugar level (e.g., None, Half, Full)" },
+        "ice": { "type": "string", "description": "Ice level (e.g., None, Less, Full)" },
+        "note": { "type": "string", "description": "Optional note" },
+        "price": { "type": "number", "description": "Price of the drink" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the order was placed" }
+      },
+      "required": ["userName", "drinkName", "sugar", "ice", "price", "createdAt"]
+    }
+  },
+  "firestore": {
+    "orders": {
+      "schema": "Order",
+      "description": "Collection of all drink orders"
+    }
+  }
+}
